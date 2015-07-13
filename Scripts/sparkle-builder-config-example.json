@@ -1,0 +1,23 @@
+{
+  "VERBOSE"                                     : true,
+  "BUILD_DIRECTORY_PATH"                        : "/Full/Path/To/Your/Builds/",
+  "PRIVATE_KEY_PATH"                            : "/Full/Path/To/Your/Private/Keys/dsa_priv.pem",
+  "SPARKLE_BIN_PATH"                            : "/Full/Path/To/The/Sparkle/bin/directory/bin/",
+  "APPCAST_FILE_NAME"                           : "appcast.xml",
+  "APPCAST_BASE_URL"                            : "http://sparklebuilder.dev/",
+  "APPCAST_TITLE"                               : "App Changelog",
+  "APPCAST_DESCRIPTION"                         : "some description",
+  "APPCAST_LANGUAGE"                            : "en",
+  "APPCAST_LATEST_VERSION_UPDATE_DESCRIPTION"   : "Foo",
+  "APPCAST_RELEASE_NOTES_FILE"                  : "relative/path/from/appcast/directory/on/your/server",
+  "CLEAN_DIRECTORIES"                           : true,
+  "OVERWRITE_APP_ARCHIVES"                      : true,
+  "ARCHIVE_ZIPS"                                : true,
+  "ARCHIVE_APPCASTS"                            : true,
+  "ARCHIVE_DELTAS"                              : true,
+  "PUBLISH"                                     : true,
+  "PUBLISH_ROOT_PATH"                           : "/Full/Path/To/Your/Server/Files/",
+  "PUBLISH_APPCAST_DIR"                         : "appcast/",
+  "PUBLISH_DOWNLOADS_DIR"                       : "downloads/",
+  "PUBLISH_DELTAS_DIR"                          : "deltas/"
+}
