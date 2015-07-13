@@ -265,7 +265,7 @@ if not apps:
 
 ## check for directories, if Zips or Deltas don't exist create them
 
-create_dir_if_needed(ZIPS_PATH, 'Zips`')
+create_dir_if_needed(ZIPS_PATH, 'Zips')
 create_dir_if_needed(APPCAST_PATH, 'Appcast')
 create_dir_if_needed(DELTAS_PATH, 'Deltas')
 
