@@ -47,7 +47,7 @@ def log(msg):
 
 def create_dir_if_needed(path, name):
     if not os.path.isdir(path):
-        log("Creating {} directory.".format(name))
+        log("create {} directory.".format(name))
         os.makedirs(path)
 
 def clean_directory(dir):
@@ -124,20 +124,8 @@ def get_version_info(bundle):
     return "{}.{}".format(major_version,minor_version)
 
 
-def get_version_info__(app_file):
-    info_plist = app_file + "/Contents/Info.plist"
-    with open(info_plist, 'rb') as fp:
-        pl = readPlist(fp)
-    major_version = pl['CFBundleShortVersionString']
-    minor_version = pl['CFBundleVersion']
-    return "{}.{}".format(major_version,minor_version)
-
-
 def get_bundle_version(app_file):
-    info_plist = app_file + "/Contents/Info.plist"
-    with open(info_plist, 'rb') as fp:
-        pl = readPlist(fp)
-    return pl['CFBundleVersion']
+    return get_key_from_bundle(key='CFBundleVersion', bundle=app_file)
 
 
 def archive_file(filepath, subdirectory):
@@ -295,7 +283,8 @@ appcast.appcast_description                 = APPCAST_DESCRIPTION
 if APPCAST_RELEASE_NOTES_FILE:
      appcast.release_notes_file             = APPCAST_RELEASE_NOTES_FILE
 appcast.launguage                           = APPCAST_LANGUAGE
-appcast.latest_version_number               = CURRENT_VERSION
+appcast.latest_version_number               = BUNDLE_VERSION
+appcast.short_version_string                = CURRENT_VERSION
 appcast.latest_version_update_description   = APPCAST_LATEST_VERSION_UPDATE_DESCRIPTION
 appcast.pub_date                            = APPCAST_PUBDATE
 appcast.latest_version_url                  = APPCAST_LATEST_VERSION_URL

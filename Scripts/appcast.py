@@ -38,6 +38,7 @@ class Appcast:
         self.pub_date                           = None
         self.latest_version_url                 = None
         self.latest_version_number              = None
+        self.short_version_string               = None
         self.latest_version_size                = None
         self.latest_version_dsa_key             = None
         self.release_notes_file                 = None
@@ -61,6 +62,7 @@ class Appcast:
             <pubDate>{{ pub_date }}</pubDate>
             <enclosure url="{{ latest_version_url }}"
                       sparkle:version="{{ latest_version_number }}"
+                      sparkle:shortVersionString="{{ short_version_string }}"
                       length="{{ latest_version_size }}"
                       type="application/octet-stream"
                       sparkle:dsaSignature="{{ latest_version_dsa_key }}"/>
@@ -88,6 +90,7 @@ class Appcast:
             release_notes_file                  = self.release_notes_file,
             launguage                           = self.launguage,
             latest_version_number               = self.latest_version_number,
+            short_version_string                = self.short_version_string,
             latest_version_update_description   = self.latest_version_update_description,
             pub_date                            = self.pub_date,
             latest_version_url                  = self.latest_version_url,
