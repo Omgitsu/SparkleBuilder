@@ -8,8 +8,8 @@
 * rename the example to `sparkle-builder-config.json`
 * delete the file in `Builds/App`
 * place your **latest** app in `Builds/App`
-* run `python Scripts/sparkle-builder.py`
-
+* cd into `Scripts`
+* run `python sparkle-builder.py`
 
 #### What it does (and can do)
 
@@ -39,6 +39,9 @@
 * appcast/
 * deltas/
 * downloads/
+
+##### Notes
+* the appcast uses your build number aka `CFBundleVersion` in your info.plist for updates - make sure that it increments between versions!
 
 
 >If you already have a bunch of builds, the recommendation is to create the `Builds/Archives/Apps/` folder and place each of the previous builds there *before* you run the app for the first time. Each app should be named with the version and build number appended to the file name.  So version 1.0.1 of your test.app should be named test-1.0.1.app
