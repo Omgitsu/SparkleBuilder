@@ -63,5 +63,6 @@ target/
 # keys
 *.pem
 
-# private config file
+# private config files
 sparkle-builder-config.json
+aws-s3-config.json

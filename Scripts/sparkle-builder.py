@@ -32,6 +32,8 @@ import datetime
 import time
 import json
 
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
 from subprocess import Popen, PIPE
 from shutil import move, copy, copytree, rmtree
 from plistlib import readPlist
@@ -150,6 +152,18 @@ def copy_files(origin="", destination="", extension=""):
                 published_file = os.path.join(destination, filename)
                 copy(origin_file, published_file)
 
+def s3upload(filepath, directory=""):
+    filename =  os.path.basename(filepath)
+    log("uploading {} to s3".format(filename))
+    conn = S3Connection(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+    bucket = conn.get_bucket(S3_BUCKET_NAME)
+    k = Key(bucket)
+    k.key = directory + filename
+    with open(filepath) as file:
+        k.set_contents_from_file(file)
+    s3_file_url = AWS_BUCKET_PATH + directory + filename
+    log("new s3 file at:" + s3_file_url)
+    return s3_file_url
 
 ##############################
 ###   configuration setup  ###
@@ -159,7 +173,18 @@ with open('sparkle-builder-config.json') as data_file:
     data = json.load(data_file)
 
 
-VERBOSE                 = data["VERBOSE"]
+VERBOSE                                     = data["VERBOSE"]
+
+## AWS S3 configuration
+USE_S3_FOR_DOWNLOADS                        = data["USE_S3_FOR_DOWNLOADS"]
+
+if USE_S3_FOR_DOWNLOADS:
+    with open('aws-s3-config.json') as data_file:
+        s3data = json.load(data_file)
+        AWS_ACCESS_KEY_ID                   = s3data["AWS_ACCESS_KEY_ID"]
+        AWS_SECRET_ACCESS_KEY               = s3data["AWS_SECRET_ACCESS_KEY"]
+        S3_BUCKET_NAME                      = s3data["S3_BUCKET_NAME"]
+        AWS_BUCKET_PATH                     = "https://s3.amazonaws.com/mockulus/"
 
 # paths
 BUILD_PATH              = data["BUILD_DIRECTORY_PATH"]
@@ -236,6 +261,8 @@ APPCAST_DELTA_URL                           = APPCAST_BASE_URL + 'deltas/'
 APPCAST_FILE = APPCAST_PATH + APPCAST_FILE_NAME
 
 
+
+
 ##############################
 ###   appcast genreration  ###
 ##############################
@@ -274,6 +301,9 @@ if ARCHIVE_DELTAS:
 if ARCHIVE_ZIPS:
     create_dir_if_needed(ARCHIVE_PATH+'Zips/', 'Archive/Zips')
 
+
+
+
 ## appcast setup
 appcast = Appcast()
 
@@ -287,10 +317,18 @@ appcast.latest_version_number               = BUNDLE_VERSION
 appcast.short_version_string                = CURRENT_VERSION
 appcast.latest_version_update_description   = APPCAST_LATEST_VERSION_UPDATE_DESCRIPTION
 appcast.pub_date                            = APPCAST_PUBDATE
-appcast.latest_version_url                  = APPCAST_LATEST_VERSION_URL
 zipped_app                                  = create_zip(LATEST_APP, new_name=LATEST_APP_ARCHIVE)
+
+if USE_S3_FOR_DOWNLOADS:
+    s3_file_url                             = s3upload(zipped_app)
+    appcast.latest_version_url              = s3_file_url
+else:
+    appcast.latest_version_url              = APPCAST_LATEST_VERSION_URL
+
 appcast.latest_version_size                 = os.path.getsize(zipped_app)
 appcast.latest_version_dsa_key              = sign_update(zipped_app, private_key_path=PRIVATE_KEY_PATH)
+
+
 
 ## deltas
 for app in apps:
@@ -299,7 +337,10 @@ for app in apps:
             app_path                            = APP_ARCHIVE_PATH + app
             delta                               = Delta()
             delta_file_name, delta_file_path    = create_delta(old_source=app_path, new_source=CURRENT_APP_PATH+LATEST_APP)
-            delta.delta_url                     = APPCAST_DELTA_URL + delta_file_name
+            if USE_S3_FOR_DOWNLOADS:
+                delta.delta_url                 = s3upload(delta_file_path, directory="deltas/")
+            else:
+                delta.delta_url                     = APPCAST_DELTA_URL + delta_file_name
             delta.delta_to_version              = CURRENT_VERSION
             delta.delta_from_version            = get_version_info(app_path)
             delta.delta_size                    = os.path.getsize(delta_file_path)
