@@ -8,6 +8,8 @@
 * rename the example to `sparkle-builder-config.json`
 * configure the settings in `aws-s3-config-example.json`
 * rename the example to `aws-s3-config.json`
+* configure the settings in `bitly-config-example.json`
+* rename the example to `bitly-config.json`
 * delete the file in `Builds/App`
 * place your **latest** app in `Builds/App`
 * cd into `Scripts`
