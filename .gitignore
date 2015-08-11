@@ -66,3 +66,4 @@ target/
 # private config files
 sparkle-builder-config.json
 aws-s3-config.json
+bitly-config.json

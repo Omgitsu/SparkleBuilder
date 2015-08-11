@@ -19,5 +19,7 @@
   "PUBLISH_ROOT_PATH"                           : "/Full/Path/To/Your/Server/Files/",
   "PUBLISH_APPCAST_DIR"                         : "appcast/",
   "PUBLISH_DOWNLOADS_DIR"                       : "downloads/",
-  "PUBLISH_DELTAS_DIR"                          : "deltas/"
+  "PUBLISH_DELTAS_DIR"                          : "deltas/",
+  "USE_S3_FOR_DOWNLOADS"                        : false,
+  "USE_BITLY_TO_SHORTEN_LINKS"                  : false
 }

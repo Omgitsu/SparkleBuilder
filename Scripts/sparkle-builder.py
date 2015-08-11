@@ -38,6 +38,7 @@ from subprocess import Popen, PIPE
 from shutil import move, copy, copytree, rmtree
 from plistlib import readPlist
 from pprint import pprint
+from bitly_api import Connection as BitlyConnection
 
 from appcast import Appcast, Delta
 
@@ -165,6 +166,20 @@ def s3upload(filepath, directory=""):
     log("new s3 file at:" + s3_file_url)
     return s3_file_url
 
+
+def format_url(url, title):
+    if USE_BITLY_TO_SHORTEN_LINKS:
+        url = shorten_url_with_bitly(url, title)
+    return url
+
+def shorten_url_with_bitly(url, title):
+    log("shortening url with bitly")
+    c = BitlyConnection(access_token=BITLY_TOKEN)
+    response = c.shorten(url)
+    c.user_link_edit(response["url"],"title",title=title)
+    log("new bitly link:"+response["url"])
+    return response["url"]
+
 ##############################
 ###   configuration setup  ###
 ##############################
@@ -180,11 +195,18 @@ USE_S3_FOR_DOWNLOADS                        = data["USE_S3_FOR_DOWNLOADS"]
 
 if USE_S3_FOR_DOWNLOADS:
     with open('aws-s3-config.json') as data_file:
-        s3data = json.load(data_file)
+        s3data                              = json.load(data_file)
         AWS_ACCESS_KEY_ID                   = s3data["AWS_ACCESS_KEY_ID"]
         AWS_SECRET_ACCESS_KEY               = s3data["AWS_SECRET_ACCESS_KEY"]
         S3_BUCKET_NAME                      = s3data["S3_BUCKET_NAME"]
         AWS_BUCKET_PATH                     = "https://s3.amazonaws.com/mockulus/"
+
+## bitly
+USE_BITLY_TO_SHORTEN_LINKS                  = data["USE_BITLY_TO_SHORTEN_LINKS"]
+if USE_BITLY_TO_SHORTEN_LINKS:
+    with open('bitly-config.json') as data_file:
+        bitly_data                          = json.load(data_file)
+        BITLY_TOKEN                         = bitly_data["BITLY_TOKEN"]
 
 # paths
 BUILD_PATH              = data["BUILD_DIRECTORY_PATH"]
@@ -321,9 +343,11 @@ zipped_app                                  = create_zip(LATEST_APP, new_name=LA
 
 if USE_S3_FOR_DOWNLOADS:
     s3_file_url                             = s3upload(zipped_app)
-    appcast.latest_version_url              = s3_file_url
+    appcast.latest_version_url              = format_url(s3_file_url, LATEST_APP_ARCHIVE+" S3")
 else:
-    appcast.latest_version_url              = APPCAST_LATEST_VERSION_URL
+    appcast.latest_version_url              = format_url(APPCAST_LATEST_VERSION_URL, LATEST_APP_ARCHIVE)
+
+
 
 appcast.latest_version_size                 = os.path.getsize(zipped_app)
 appcast.latest_version_dsa_key              = sign_update(zipped_app, private_key_path=PRIVATE_KEY_PATH)
