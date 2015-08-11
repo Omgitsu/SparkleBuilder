@@ -330,6 +330,7 @@ if ARCHIVE_ZIPS:
 appcast = Appcast()
 
 appcast.title                               = APPCAST_TITLE
+appcast.app_name                            = APP_NAME
 appcast.appcast_url                         = APPCAST_URL
 appcast.appcast_description                 = APPCAST_DESCRIPTION
 if APPCAST_RELEASE_NOTES_FILE:

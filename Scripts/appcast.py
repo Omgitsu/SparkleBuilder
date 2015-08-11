@@ -30,6 +30,7 @@ from jinja2 import Template
 class Appcast:
     def __init__(self):
     	self.title                              = None
+        self.app_name                           = None
         self.appcast_url                        = None
         self.appcast_description                = None
         self.language                           = None
@@ -53,7 +54,7 @@ class Appcast:
             <description>{{ appcast_description }}</description>
             <language>{{ language }}</language>
             <item>
-            <title>Version {{ latest_version_number }}</title>
+            <title>{{ app_name }} version {{ short_version_string }}</title>
             {% if release_notes_file %}
     	    <sparkle:releaseNotesLink>{{ release_notes_file }}</sparkle:releaseNotesLink>
             {% else %}
@@ -85,6 +86,7 @@ class Appcast:
     def render(self):
         appcast = self.__appcast_template.render(
             title                               = self.title,
+            app_name                            = self.app_name,
             appcast_url                         = self.appcast_url,
             appcast_description                 = self.appcast_description,
             release_notes_file                  = self.release_notes_file,
