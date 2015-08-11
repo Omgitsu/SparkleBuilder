@@ -1,2 +1,4 @@
+bitly-api==0.3
+boto==2.38.0
 Jinja2==2.7.3
 MarkupSafe==0.23
