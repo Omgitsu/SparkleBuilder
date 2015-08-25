@@ -109,6 +109,7 @@ class Delta:
         self.delta_url              = None
         self.delta_to_version       = None
         self.delta_from_version     = None
+        self.short_version_string   = None
         self.delta_size             = None
         self.delta_dsa_key          = None
 
@@ -116,6 +117,7 @@ class Delta:
                <enclosure url="{{ delta_url }}"
                           sparkle:version="{{ delta_to_version }}"
                           sparkle:deltaFrom="{{ delta_from_version }}"
+                          sparkle:shortVersionString="{{ short_version_string }}"
                           length="{{ delta_size }}"
                           type="application/octet-stream"
                           sparkle:dsaSignature="{{ delta_dsa_key }}"/>
@@ -123,10 +125,11 @@ class Delta:
 
     def render(self):
         delta = self.__delta_template.render(
-            delta_url           = self.delta_url,
-            delta_to_version    = self.delta_to_version,
-            delta_from_version  = self.delta_from_version,
-            delta_size          = self.delta_size,
-            delta_dsa_key       = self.delta_dsa_key,
+            delta_url               = self.delta_url,
+            delta_to_version        = self.delta_to_version,
+            delta_from_version      = self.delta_from_version,
+            short_version_string    = self.short_version_string,
+            delta_size              = self.delta_size,
+            delta_dsa_key           = self.delta_dsa_key,
             )
         return delta
