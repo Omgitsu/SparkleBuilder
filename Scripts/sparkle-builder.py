@@ -65,6 +65,7 @@ def clean_directory(dir):
             print e
 
 def create_delta(old_source = '', new_source = ''):
+    log("creating delta from {} to {} ".format(old_source, new_source))
     binary_delta_script = SPARKLE_BIN_PATH + "BinaryDelta"
     old_version = get_version_info(old_source)
     new_version = get_version_info(new_source)
@@ -74,11 +75,12 @@ def create_delta(old_source = '', new_source = ''):
     process = Popen(create_delta_call, stdout=PIPE)
     (output, err) = process.communicate()
     exit_code = process.wait()
-    log("create {}".format(delta_file))
+    log("{} created".format(delta_file))
     return delta_file, delta_file_path
 
 
 def create_zip(file_name, new_name=''):
+    log("zipping " + file_name)
     path = CURRENT_APP_PATH
     source_file = path + file_name
     if new_name:
@@ -95,7 +97,7 @@ def create_zip(file_name, new_name=''):
     exit_code = process.wait()
     move(zip_file, ZIPS_PATH)
 
-    log("create {}.zip".format(file_name))
+    log("{}.zip created".format(file_name))
     if ARCHIVE_ZIPS:
         archive_file(new_zip_file, 'Zips/')
     # return path to new zip
@@ -237,9 +239,13 @@ if len(_apps) > 1:
 
 LATEST_APP              = _apps[0]
 APP_NAME                = get_key_from_bundle(key='CFBundleExecutable', bundle=CURRENT_APP_PATH+LATEST_APP)
-BUNDLE_VERSION          = get_key_from_bundle(key='CFBundleVersion', bundle=CURRENT_APP_PATH+LATEST_APP)
+BUNDLE_VERSION          = get_bundle_version(CURRENT_APP_PATH+LATEST_APP)
 CURRENT_VERSION         = get_version_info(CURRENT_APP_PATH+LATEST_APP)
 LATEST_APP_ARCHIVE      = '{}-{}.app'.format(APP_NAME, CURRENT_VERSION)
+
+log(APP_NAME)
+log("current-version: {}".format(CURRENT_VERSION))
+log("bundle-version: {}".format(BUNDLE_VERSION))
 
 PRIVATE_KEY_PATH        = data["PRIVATE_KEY_PATH"]
 SPARKLE_BIN_PATH        = data["SPARKLE_BIN_PATH"]
@@ -365,9 +371,10 @@ for app in apps:
             if USE_S3_FOR_DOWNLOADS:
                 delta.delta_url                 = s3upload(delta_file_path, directory="deltas/")
             else:
-                delta.delta_url                     = APPCAST_DELTA_URL + delta_file_name
-            delta.delta_to_version              = CURRENT_VERSION
-            delta.delta_from_version            = get_version_info(app_path)
+                delta.delta_url                 = APPCAST_DELTA_URL + delta_file_name
+            delta.delta_to_version              = BUNDLE_VERSION
+            delta.delta_from_version            = get_bundle_version(app_path)
+            delta.short_version_string          = CURRENT_VERSION
             delta.delta_size                    = os.path.getsize(delta_file_path)
             delta.delta_dsa_key                 = sign_update(delta_file_path, private_key_path=PRIVATE_KEY_PATH)
             appcast.append_delta(delta)
