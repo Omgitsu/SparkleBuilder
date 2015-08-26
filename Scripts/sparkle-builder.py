@@ -169,7 +169,7 @@ def s3upload(filepath, directory=""):
     return s3_file_url
 
 
-def format_url(url, title):
+def format_url(url='', title=''):
     if USE_BITLY_TO_SHORTEN_LINKS:
         url = shorten_url_with_bitly(url, title)
     return url
@@ -350,9 +350,9 @@ zipped_app                                  = create_zip(LATEST_APP, new_name=LA
 
 if USE_S3_FOR_DOWNLOADS:
     s3_file_url                             = s3upload(zipped_app)
-    appcast.latest_version_url              = format_url(s3_file_url, LATEST_APP_ARCHIVE+" S3")
+    appcast.latest_version_url              = format_url(url=s3_file_url, title=LATEST_APP_ARCHIVE+" S3")
 else:
-    appcast.latest_version_url              = format_url(APPCAST_LATEST_VERSION_URL, LATEST_APP_ARCHIVE)
+    appcast.latest_version_url              = format_url(url=APPCAST_LATEST_VERSION_URL, title=LATEST_APP_ARCHIVE)
 
 
 
@@ -369,9 +369,9 @@ for app in apps:
             delta                               = Delta()
             delta_file_name, delta_file_path    = create_delta(old_source=app_path, new_source=CURRENT_APP_PATH+LATEST_APP)
             if USE_S3_FOR_DOWNLOADS:
-                delta.delta_url                 = s3upload(delta_file_path, directory="deltas/")
+                delta.delta_url                 = format_url(url=s3upload(delta_file_path, directory="deltas/"), title=delta_file_name)
             else:
-                delta.delta_url                 = APPCAST_DELTA_URL + delta_file_name
+                delta.delta_url                 = format_url(url=(APPCAST_DELTA_URL + delta_file_name), title=delta_file_name)
             delta.delta_to_version              = BUNDLE_VERSION
             delta.delta_from_version            = get_bundle_version(app_path)
             delta.short_version_string          = CURRENT_VERSION
