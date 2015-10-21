@@ -441,3 +441,6 @@ if ARCHIVE_DELTAS:
         i+=1
     copytree(DELTAS_PATH,"{}_{}".format(new_directory, str(i)))
     log("archive deltas")
+
+print "sparkle builder finished"
+print "update app url to point to: " + appcast.latest_version_url
